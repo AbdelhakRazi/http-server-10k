@@ -1,7 +1,3 @@
-CC=g++
-CPPFLAGS=--std=c++14
-SRC = $(wildcard *.c) $(wildcard subdir/*.c)
-OBJ = $(SRC:.c=.o) # pattern to replace .c by .o files, we need OBJ for last compilation to generate executable.
 # we should include header files, because a rule detects when a file changes, in our case it's detecting only .cc since
 # we're pasing only cc files, we should put headers used in prequesities fields, to be detected if changed.
 # automatic variables
@@ -10,16 +6,49 @@ OBJ = $(SRC:.c=.o) # pattern to replace .c by .o files, we need OBJ for last com
 # $<: first prerequisite
 # $*: target file name without extension
 # % : is used for pattern matching, for example %.o matches all .o files, %.c matches all .c files
+# -D: is used to generate macros: -DDEBUG equivalent to: #define DEBUG 1
 # better approach now: % takes for each c file, and generate .o file.
-server.out: $(OBJ)
-	$(CC) $(CPPFLAGS) $*.out -o $@
-tcp_server.o: server/tcp_server.cc http_parser.o thread_pool.o add_client.o read_data.o send_request.o
-	$(CC) $(CPPFLAGS) -c $< -o $@
-main.o: main.cc tcp_server.o
-	$(CC) $(CPPFLAGS) -c $< -o $@
-%.o: %.cc #useful for compiling files that are not depdendent
-	$(CC) $(CPPFLAGS) -c $<  -o $@
 
-.PHONY: clean # phony is used when directory contains file that might be named "clean", so to avoid conflict.
+CC = g++
+CPPFLAGS = --std=c++14 -MMD -MP
+BUILD_DIR = build
+SRC = $(shell find . -name "*.cc")
+OBJ = $(SRC:%.cc=$(BUILD_DIR)/%.o)
+DEP = $(OBJ:.o=.d)
+TARGET = server.out
+
+# Create necessary directories
+$(BUILD_DIR)/%.o: %.cc | $(BUILD_DIR)
+	$(CC) $(CPPFLAGS) -c $< -o $@
+
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR) $(BUILD_DIR)/server $(BUILD_DIR)/thread_pool $(BUILD_DIR)/task $(BUILD_DIR)/parser
+
+# Include dependency files
+-include $(DEP)
+
+# Default target
+all: $(TARGET)
+
+$(TARGET): $(OBJ)
+	$(CC) $(CPPFLAGS) $^ -o $@
+
+# Custom object rules
+$(BUILD_DIR)/main.o: main.cc $(BUILD_DIR)/server/tcp_server.o
+	$(CC) $(CPPFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/server/tcp_server.o: server/tcp_server.cc $(BUILD_DIR)/parser/http_parser.o $(BUILD_DIR)/thread_pool/thread_pool.o \
+ $(BUILD_DIR)/task/add_client.o $(BUILD_DIR)/task/read_request.o $(BUILD_DIR)/task/send_response.o
+	$(CC) $(CPPFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/thread_pool/thread_pool.o: thread_pool/thread_pool.cc $(BUILD_DIR)/task/read_request.o $(BUILD_DIR)/task/send_response.o
+	$(CC) $(CPPFLAGS) -c $< -o $@
+
+# General rule for object files
+$(BUILD_DIR)/%.o: %.cc
+	$(CC) $(CPPFLAGS) -c $< -o $@
+
+# Clean up build artifacts
+.PHONY: clean
 clean:
-	rm $(OBJECTS)
+	rm -rf $(BUILD_DIR)
