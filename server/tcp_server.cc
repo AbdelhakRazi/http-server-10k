@@ -97,8 +97,8 @@ void TcpServer::listen_socket()
         exit(EXIT_FAILURE);
     }
     // first error: no need to set up server for monitoring, add thread that will monitor it continuously.
-    AddClient addtask{server_fd, kqueue_instance, current_fds};
-    connection_thread = std::thread{&AddClient::execute, addtask};
+    
+    connection_thread = std::thread{AddClient{server_fd, kqueue_instance, current_fds}};
     std::cout << "server fd: " << server_fd << std::endl;
 }
 
@@ -135,8 +135,8 @@ void TcpServer::handler_clients()
                 }
                 else
                 {
-                    thread_pool.add_task(std::make_unique<ReadData>(event.ident, current_fds, kqueue_instance));
-                    thread_pool.add_task(std::make_unique<SendResponse>(event.ident));
+                    thread_pool.add_task(ReadData(event.ident, current_fds, kqueue_instance));
+                    thread_pool.add_task(SendResponse(event.ident));
                 }
             }
         }
