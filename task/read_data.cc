@@ -7,7 +7,7 @@
 #include "../request/http_request.h"
 #include "../parser/http_parser.h"
 
-void ReadData::execute()
+void ReadData::operator() ()
 {
     char buffer[1024] = {0};
     int read_status = read(client_fd, buffer, sizeof(buffer));

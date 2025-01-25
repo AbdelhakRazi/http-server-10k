@@ -12,7 +12,8 @@ class ThreadPool {
    std::queue<std::unique_ptr<TcpTask>> tasks;
    int nb_threads;
    public:
-        void add_task(std::unique_ptr<TcpTask> task);
+        template<typename T>
+        void add_task(T&& task);
         ThreadPool() = default; // voir ce problème après
         ThreadPool(int nb_threads);
         ~ThreadPool();

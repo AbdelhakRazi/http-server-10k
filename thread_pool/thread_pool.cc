@@ -2,14 +2,19 @@
 #include <mutex>
 #include <iostream>
 
-std::mutex tasks_mutex;
 extern std::condition_variable cond;
 extern bool isRunning;
-
-void ThreadPool::add_task(std::unique_ptr<TcpTask> task)
+namespace {
+    std::mutex tasks_mutex;
+}
+// using templates, we don't need tasks to be of specific type. Any type of task can be passed even if not related
+// we also won't need the use of unique_ptr.
+template <typename T>
+void ThreadPool::add_task(T&& task)
 {
     std::unique_lock<std::mutex> guard(tasks_mutex);
-    tasks.push(std::move(task));
+    tasks.push(std::forward<T>(task)); // preserve original T type as rvalue/lvalue before that the compiler deduced its type
+    // need to write examples about std::forward, I understood the purpose anyway.
     guard.unlock();
     cond.notify_one();
 }
@@ -22,9 +27,9 @@ ThreadPool::ThreadPool(int nb_threads)
                 std::unique_lock<std::mutex> guard(tasks_mutex);
                 cond.wait(guard);
                 if(!isRunning) return; // ended program
-                std::unique_ptr<TcpTask> task = std::move(tasks.front());
+                auto task = std::move(tasks.front());
                 tasks.pop();
-                task->execute();
+                task();
             }
         
         }));

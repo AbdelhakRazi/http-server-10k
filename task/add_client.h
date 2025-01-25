@@ -1,10 +1,10 @@
 #ifndef __ADD_CLIENT__H__
 #define __ADD_CLIENT__H__
-#include "tcp_task.h"
+
 #include <unordered_set>
 #include <vector>
 // TODO: add copy constructor and move constructor, we need it when popping the element from the queue
-class AddClient : public TcpTask
+class AddClient
 {
     int server_fd;
     int kqueue_instance;
@@ -22,7 +22,7 @@ public:
     AddClient(AddClient &&other) : server_fd{other.server_fd},
                                    current_fds{other.current_fds},
                                    kqueue_instance{other.kqueue_instance} {}
-    void execute() override;
+    void operator() ();
     void accept_client();
     ~AddClient() = default;
 };

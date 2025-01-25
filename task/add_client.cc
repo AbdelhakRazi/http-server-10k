@@ -10,7 +10,7 @@
 #include <thread>
 
 extern bool isRunning;
-void AddClient::execute()
+void AddClient::operator() ()
 {
     struct kevent server_monitor;
     struct kevent server_event;
