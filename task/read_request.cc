@@ -1,4 +1,4 @@
-#include "read_data.h"
+#include "read_request.h"
 #include <sys/socket.h>
 #include <unistd.h>
 #include <iostream>
@@ -7,7 +7,7 @@
 #include "../request/http_request.h"
 #include "../parser/http_parser.h"
 
-void ReadData::operator() ()
+void ReadRequest::operator() ()
 {
     char buffer[1024] = {0};
     int read_status = read(client_fd, buffer, sizeof(buffer));

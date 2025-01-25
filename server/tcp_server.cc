@@ -6,7 +6,7 @@
 #include <iostream>
 #include <thread>
 
-#include "../task/read_data.h"
+#include "../task/read_request.h"
 #include "../task/send_response.h"
 #include "../task/add_client.h"
 
@@ -135,7 +135,7 @@ void TcpServer::handler_clients()
                 }
                 else
                 {
-                    thread_pool.add_task(ReadData{static_cast<int>(event.ident), current_fds, kqueue_instance});
+                    thread_pool.add_task(ReadRequest{static_cast<int>(event.ident), current_fds, kqueue_instance});
                     thread_pool.add_task(SendResponse{static_cast<int>(event.ident)});
                 }
             }

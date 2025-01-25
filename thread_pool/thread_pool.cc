@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "../task/send_response.h"
-#include "../task/read_data.h"
+#include "../task/read_request.h"
 
 extern std::condition_variable cond;
 extern bool isRunning;
@@ -24,7 +24,7 @@ void ThreadPool::add_task(T&& task)
 
 // problem with templates is that if the method definition is not header files u have to do the following
 template void ThreadPool::add_task<SendResponse>(SendResponse&&);
-template void ThreadPool::add_task<ReadData>(ReadData&&);
+template void ThreadPool::add_task<ReadRequest>(ReadRequest&&);
 
 ThreadPool::ThreadPool(int nb_threads)
 {
