@@ -1,6 +1,10 @@
 #include "thread_pool.h"
+
 #include <mutex>
 #include <iostream>
+
+#include "../task/send_response.h"
+#include "../task/read_data.h"
 
 extern std::condition_variable cond;
 extern bool isRunning;
@@ -13,11 +17,14 @@ template <typename T>
 void ThreadPool::add_task(T&& task)
 {
     std::unique_lock<std::mutex> guard(tasks_mutex);
-    tasks.push(std::forward<T>(task)); // preserve original T type as rvalue/lvalue before that the compiler deduced its type
-    // need to write examples about std::forward, I understood the purpose anyway.
+    tasks.push(std::forward<T>(task));
     guard.unlock();
     cond.notify_one();
 }
+
+// problem with templates is that if the method definition is not header files u have to do the following
+template void ThreadPool::add_task<SendResponse>(SendResponse&&);
+template void ThreadPool::add_task<ReadData>(ReadData&&);
 
 ThreadPool::ThreadPool(int nb_threads)
 {
@@ -27,14 +34,15 @@ ThreadPool::ThreadPool(int nb_threads)
                 std::unique_lock<std::mutex> guard(tasks_mutex);
                 cond.wait(guard);
                 if(!isRunning) return; // ended program
-                auto task = std::move(tasks.front());
+                std::function<void()> current_task = std::move(tasks.front());
                 tasks.pop();
-                task();
+                current_task();
             }
         
         }));
     }
 }
+
 ThreadPool::~ThreadPool() {
     for(int i = 0; i < nb_threads; i++) {
         workers[i].join();

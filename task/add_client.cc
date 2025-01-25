@@ -1,13 +1,16 @@
 #include "add_client.h"
+
 #include <sys/socket.h>
 #include <unistd.h>
 #include <iostream>
 #include <sys/event.h>
 #include <arpa/inet.h>
-#include "../request/http_request.h"
-#include "../parser/http_parser.h"
 #include <sys/fcntl.h>
 #include <thread>
+
+#include "../request/http_request.h"
+#include "../parser/http_parser.h"
+
 
 extern bool isRunning;
 void AddClient::operator() ()

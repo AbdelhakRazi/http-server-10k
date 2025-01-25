@@ -19,7 +19,7 @@ public:
     ReadData(const ReadData &other) : client_fd{other.client_fd},
                                       current_fds{other.current_fds},
                                       kqueue_instance{other.kqueue_instance} {}
-    ReadData(ReadData &&other) : client_fd{other.client_fd},
+    ReadData(const ReadData &&other) : client_fd{other.client_fd},
                                  current_fds{std::move(other.current_fds)},
                                  kqueue_instance{other.kqueue_instance} {}
     void operator() ();
