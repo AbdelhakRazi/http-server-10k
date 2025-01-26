@@ -47,4 +47,5 @@ ThreadPool::~ThreadPool() {
     for(int i = 0; i < nb_threads; i++) {
         workers[i].join();
     }
+    std::cout << "finished joining" << std::endl;
 }

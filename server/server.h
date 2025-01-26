@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __SERVER__H__
+#define __SERVER__H__
 
 class Server {
     public:
@@ -6,3 +7,5 @@ class Server {
         virtual void stop() = 0;
         virtual ~Server() = default;
 };
+
+#endif  //!__SERVER__H__

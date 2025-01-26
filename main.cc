@@ -5,6 +5,7 @@
 #include "server/server.h"
 #include "server/tcp_server.h"
 
+#define POOL_SIZE 4
 namespace
 { // prevent access of server from other files
   std::unique_ptr<Server> server;
@@ -28,7 +29,7 @@ void set_signal_handler()
 int main()
 {
   set_signal_handler();
-  server = std::make_unique<TcpServer>(3);
+  server = std::make_unique<TcpServer>(POOL_SIZE);
   server->start();
   return 0;
 }

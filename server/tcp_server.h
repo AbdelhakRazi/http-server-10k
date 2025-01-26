@@ -1,6 +1,5 @@
-#pragma once
-
-// RULE: put as much includes in .cc
+#ifndef __TCP_SERVER__H__
+#define __TCP_SERVER__H__
 
 #include <arpa/inet.h> // For htons, htonl, etc.
 #include <sys/types.h>
@@ -13,6 +12,10 @@
 
 #include "../thread_pool/thread_pool.h"
 
+#define EVENTS_SIZE 1024
+#define BACKLOG_SIZE 1024
+#define MAX_FD 10000
+#define PORT_NUMBER 8080
 class TcpServer : public Server
 {
     ThreadPool thread_pool;
@@ -36,3 +39,7 @@ public:
     ~TcpServer() override = default;
     
 };
+
+#endif  //!__TCP_SERVER__H__
+// RULE: put as much includes in .cc
+
