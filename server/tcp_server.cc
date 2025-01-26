@@ -36,7 +36,7 @@ void TcpServer::start()
     listen_socket();
     while (isRunning)
     {
-        handler_clients();
+        handle_clients();
     }
 }
 
@@ -66,7 +66,21 @@ void TcpServer::create_socket()
         exit(EXIT_FAILURE);
     }
     // asynchronous socket.
-    int opt = 1;
+    // Set SO_REUSEADDR
+    int reuse_addr = 1;
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &reuse_addr, sizeof(reuse_addr)) == -1) {
+        std::cerr << "Failed to set SO_REUSEADDR" << std::endl;
+        close(server_fd);
+    }
+
+    // Set SO_REUSEPORT (Linux and macOS support this)
+    int reuse_port = 1;
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEPORT, &reuse_port, sizeof(reuse_port)) == -1) {
+        std::cerr << "Failed to set SO_REUSEPORT" << std::endl;
+        close(server_fd);
+        exit(EXIT_FAILURE);
+    }
+
     int flags = fcntl(server_fd, F_GETFL, 0);
     if (flags == -1 || fcntl(server_fd, F_SETFL, flags | O_NONBLOCK) == -1)
     {
@@ -78,7 +92,7 @@ void TcpServer::create_socket()
 
 void TcpServer::bind_socket()
 {
-    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0)
+    if (bind(server_fd, reinterpret_cast<sockaddr*>(&address), sizeof(address)) < 0)
     {
         perror("cannot bind");
         exit(EXIT_FAILURE);
@@ -112,7 +126,7 @@ void TcpServer::remove_client(int client_fd)
     current_fds.erase(client_fd);
 }
 
-void TcpServer::handler_clients()
+void TcpServer::handle_clients()
 {
     int res = kevent(kqueue_instance, nullptr, 0, events_list.data(), 1024, nullptr);
     if (res == -1)

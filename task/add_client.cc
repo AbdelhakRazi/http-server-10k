@@ -35,7 +35,7 @@ void AddClient::accept_client()
     int client_fd;
     struct sockaddr_in client_addr;
     socklen_t addr_len;
-    client_fd = accept(server_fd, (struct sockaddr *)&client_addr, (socklen_t *)&addr_len);
+    client_fd = accept(server_fd, reinterpret_cast<sockaddr*>(&client_addr), &addr_len);
     if (client_fd > 0)
     {
         std::cout << "Client added: " << client_fd << std::endl;

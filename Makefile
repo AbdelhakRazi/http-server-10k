@@ -10,7 +10,7 @@
 # better approach now: % takes for each c file, and generate .o file.
 
 CC = g++
-CPPFLAGS = --std=c++14 -MMD -MP
+CPPFLAGS = --std=c++17 -MMD -MP
 BUILD_DIR = build
 SRC = $(shell find . -name "*.cc")
 OBJ = $(SRC:%.cc=$(BUILD_DIR)/%.o)

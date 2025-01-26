@@ -35,7 +35,7 @@ public:
     void bind_socket();
     void listen_socket();
     void remove_client(int client_fd);
-    void handler_clients();
+    void handle_clients();
     ~TcpServer() override = default;
     
 };
