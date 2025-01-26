@@ -10,7 +10,7 @@
 # better approach now: % takes for each c file, and generate .o file.
 
 CC = g++
-CPPFLAGS = --std=c++17 -MMD -MP
+CPPFLAGS = --std=c++17 -MMD -MP -I src
 BUILD_DIR = build
 SRC = $(shell find . -name "*.cc")
 OBJ = $(SRC:%.cc=$(BUILD_DIR)/%.o)
@@ -22,7 +22,7 @@ $(BUILD_DIR)/%.o: %.cc | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) -c $< -o $@
 
 $(BUILD_DIR):
-	mkdir -p $(BUILD_DIR) $(BUILD_DIR)/server $(BUILD_DIR)/thread_pool $(BUILD_DIR)/task $(BUILD_DIR)/parser
+	mkdir -p $(BUILD_DIR) $(BUILD_DIR)/src/server $(BUILD_DIR)/src/thread_pool $(BUILD_DIR)/src/task $(BUILD_DIR)/src/parser
 
 # Include dependency files
 -include $(DEP)
@@ -34,7 +34,7 @@ $(TARGET): $(OBJ)
 	$(CC) $(CPPFLAGS) $^ -o $@
 
 # Custom object rules
-$(BUILD_DIR)/main.o: main.cc $(BUILD_DIR)/server/tcp_server.o
+$(BUILD_DIR)/main.o: src/main.cc $(BUILD_DIR)/server/tcp_server.o
 	$(CC) $(CPPFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/server/tcp_server.o: server/tcp_server.cc $(BUILD_DIR)/parser/http_parser.o $(BUILD_DIR)/thread_pool/thread_pool.o \

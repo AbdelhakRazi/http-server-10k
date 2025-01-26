@@ -1,9 +1,9 @@
 #ifndef __HTTP_PARSER__H__
 #define __HTTP_PARSER__H__
 
-#include "../request/http_request.h"
-#include "../header/header.h"
-#include "../body/body.h"
+#include "http/http_request.h"
+#include "http/header.h"
+#include "http/body.h"
 
 namespace {
     bool body_separator(const char* buffer, int cursor);

@@ -1,10 +1,10 @@
-#include "thread_pool.h"
+#include "thread_pool/thread_pool.h"
 
 #include <mutex>
 #include <iostream>
 
-#include "../task/send_response.h"
-#include "../task/read_request.h"
+#include "task/send_response.h"
+#include "task/read_request.h"
 
 extern std::condition_variable cond;
 extern bool isRunning;

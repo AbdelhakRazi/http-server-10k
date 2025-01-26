@@ -6,9 +6,9 @@
 #include <iostream>
 #include <thread>
 
-#include "../task/read_request.h"
-#include "../task/send_response.h"
-#include "../task/add_client.h"
+#include "task/read_request.h"
+#include "task/send_response.h"
+#include "task/add_client.h"
 
 bool isRunning{true};
 std::condition_variable cond;

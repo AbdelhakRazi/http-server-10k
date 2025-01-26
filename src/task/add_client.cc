@@ -1,4 +1,4 @@
-#include "add_client.h"
+#include "task/add_client.h"
 
 #include <sys/socket.h>
 #include <unistd.h>
@@ -8,8 +8,8 @@
 #include <sys/fcntl.h>
 #include <thread>
 
-#include "../request/http_request.h"
-#include "../parser/http_parser.h"
+#include "http/http_request.h"
+#include "parser/http_parser.h"
 
 
 extern bool isRunning;

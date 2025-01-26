@@ -1,8 +1,8 @@
 #ifndef __HTTP_REQUEST__H__
 #define __HTTP_REQUEST__H__
 
-#include "../header/header.h"
-#include "../body/body.h"
+#include "http/header.h"
+#include "http/body.h"
 
 struct HttpRequest{
     const Header header;
