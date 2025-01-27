@@ -13,16 +13,16 @@
 bool isRunning{true};
 std::condition_variable cond;
 
-TcpServer::TcpServer(int nb_threads) : events_list(EVENTS_SIZE), thread_pool{nb_threads}
+TcpServer::TcpServer(int nb_threads) : events_list(events_size), thread_pool{nb_threads}
 {
     // initialize address set
     memset(&address, 0, sizeof(address));
-    address.sin_port = htons(PORT_NUMBER); // convert to network endian format.
+    address.sin_port = htons(port_number); // convert to network endian format.
     address.sin_addr.s_addr = htonl(INADDR_ANY);
     address.sin_family = AF_INET;
     // problem we had with accept: os had 256 file descriptors limits. let's push it to 65535 and retry
     struct rlimit rlim;
-    rlim.rlim_cur = rlim.rlim_max = MAX_FD;
+    rlim.rlim_cur = rlim.rlim_max = max_fd;
     if (setrlimit(RLIMIT_NOFILE, &rlim) < 0)
     {
         std::cout << "Failed to increase server file descriptors, can't handle 10k clients" << std::endl;
@@ -101,7 +101,7 @@ void TcpServer::bind_socket()
 
 void TcpServer::listen_socket()
 {
-    if (listen(server_fd, BACKLOG_SIZE) < 0)
+    if (listen(server_fd, backlog_size) < 0)
     {
         perror("listen failed");
         exit(EXIT_FAILURE);

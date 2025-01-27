@@ -8,14 +8,10 @@
 #include <unordered_set>
 
 #include "server.h"
-#include "../parser/http_parser.h"
+#include "parser/http_parser.h"
 
-#include "../thread_pool/thread_pool.h"
+#include "thread_pool/thread_pool.h"
 
-#define EVENTS_SIZE 1024
-#define BACKLOG_SIZE 1024
-#define MAX_FD 10000
-#define PORT_NUMBER 8080
 class TcpServer : public Server
 {
     ThreadPool thread_pool;
@@ -26,6 +22,10 @@ class TcpServer : public Server
     std::unordered_set<int> current_fds;
     struct kevent server_monitor;
     int kqueue_instance;
+    static constexpr int events_size = 1024;
+    static constexpr int backlog_size = 1024;
+    static constexpr int max_fd = 10000;
+    static constexpr int port_number = 8080;
 
 public:
     TcpServer(int nb_threads);
