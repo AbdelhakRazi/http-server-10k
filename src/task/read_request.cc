@@ -5,8 +5,10 @@
 #include <iostream>
 #include <sys/event.h>
 #include <arpa/inet.h>
+
 #include "http/http_request.h"
 #include "parser/http_parser.h"
+#include "logging/trace.h"
 
 void ReadRequest::operator() ()
 {
@@ -32,7 +34,7 @@ void ReadRequest::operator() ()
         close(client_fd); // stops automatically kevent kernel from monitoring the file descriptor
         return;
     } // it means select updated the client, but returned 0, in this case the client has disconnected
-    std::cout << "----------------------------------------------" << std::endl;
+    TRACE_DEBUG("----------------------------------------------");
     HttpRequest httpRequest{parse_http_request(buffer, read_status)};
     /* std::cout << "----------------------- Header ----------------------" << std::endl;
     std::cout << "Method: " << httpRequest.header.method << std::endl;

@@ -9,6 +9,7 @@
 #include "task/read_request.h"
 #include "task/send_response.h"
 #include "task/add_client.h"
+#include "logging/trace.h"
 
 bool isRunning{true};
 std::condition_variable cond;
@@ -25,7 +26,7 @@ TcpServer::TcpServer(int nb_threads) : events_list(events_size), thread_pool{nb_
     rlim.rlim_cur = rlim.rlim_max = max_fd;
     if (setrlimit(RLIMIT_NOFILE, &rlim) < 0)
     {
-        std::cout << "Failed to increase server file descriptors, can't handle 10k clients" << std::endl;
+        TRACE_DEBUG("Failed to increase server file descriptors, can't handle 10k clients");
     };
 }
 
@@ -48,11 +49,11 @@ void TcpServer::stop()
     if (server_fd != -1)
     {
         close(server_fd);
-        std::cout << "server socket closed" << std::endl;
+        TRACE_DEBUG("Closed Server socket");
         for (int client_fd : current_fds)
         {
             close(client_fd);
-            std::cout << "Closed client: " << client_fd << std::endl;
+            TRACE_DEBUG("Closed client %d", client_fd);
         }
         current_fds.clear();
     }
@@ -115,13 +116,13 @@ void TcpServer::listen_socket()
     // first error: no need to set up server for monitoring, add thread that will monitor it continuously.
     
     connection_thread = std::thread{AddClient{server_fd, kqueue_instance, current_fds}};
-    std::cout << "server fd: " << server_fd << std::endl;
+    TRACE_DEBUG("Server socket listening on %d", server_fd);
 }
 
 void TcpServer::remove_client(int client_fd)
 {
     if (current_fds.find(client_fd) == current_fds.end()) return;
-    std::cout << "Remove client: " << client_fd << std::endl;
+    TRACE_DEBUG("Remove client: %d", client_fd);
     close(client_fd);
     current_fds.erase(client_fd);
 }
@@ -139,7 +140,7 @@ void TcpServer::handle_clients()
         {
             if (event.flags & EV_ERROR)
             {
-                std::cout << "Error on client: " << event.ident << std::endl;
+                TRACE_DEBUG("Error on client: %d", event.ident);
                 remove_client(event.ident);
                 continue;
             }

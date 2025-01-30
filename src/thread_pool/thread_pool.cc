@@ -5,6 +5,7 @@
 
 #include "task/send_response.h"
 #include "task/read_request.h"
+#include "logging/trace.h"
 
 extern std::condition_variable cond;
 extern bool isRunning;
@@ -47,5 +48,5 @@ ThreadPool::~ThreadPool() {
     for(int i = 0; i < nb_threads; i++) {
         workers[i].join();
     }
-    std::cout << "finished joining" << std::endl;
+    TRACE_DEBUG("All threads joined");
 }

@@ -10,7 +10,7 @@
 
 #include "http/http_request.h"
 #include "parser/http_parser.h"
-
+#include "logging/trace.h"
 
 extern bool isRunning;
 void AddClient::operator() ()
@@ -38,7 +38,7 @@ void AddClient::accept_client()
     client_fd = accept(server_fd, reinterpret_cast<sockaddr*>(&client_addr), &addr_len);
     if (client_fd > 0)
     {
-        std::cout << "Client added: " << client_fd << std::endl;
+        TRACE_DEBUG("Client %d connected", client_fd);
         struct kevent client_monitor;
         EV_SET(&client_monitor, client_fd, EVFILT_READ, EV_ADD, 0, 0, nullptr);
         kevent(kqueue_instance, &client_monitor, 1, nullptr, 0, nullptr); // direct add */
