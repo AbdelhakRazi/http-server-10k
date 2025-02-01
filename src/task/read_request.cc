@@ -23,7 +23,7 @@ void ReadRequest::operator() ()
             kevent(kqueue_instance, &client_monitor, 1, nullptr, 0, nullptr); // direct add */
         }
         else {
-            perror("failed to read");
+            TRACE_ERROR("failed to read");
         }
         return;
     }

@@ -17,6 +17,10 @@ OBJ = $(SRC:%.cc=$(BUILD_DIR)/%.o)
 DEP = $(OBJ:.o=.d)
 TARGET = server.out
 
+# Optionally define DEBUG or other macros
+ifeq ($(DEBUG), 1)
+    CPPFLAGS += -DDEBUG
+endif
 # Create necessary directories
 $(BUILD_DIR)/%.o: %.cc | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) -c $< -o $@
