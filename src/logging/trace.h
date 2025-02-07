@@ -10,19 +10,8 @@
 #include <memory>
 #include <string>
 
-#ifdef DEBUG
-    #define TRACE_DEBUG(...) format_str("[DEBUG] ", __VA_ARGS__)
-#else
-    #define TRACE_DEBUG(...) // No-op when DEBUG is not defined
-#endif // DEBUG
-
-#define TRACE_INFO(...) format_str("[INFO] ", __VA_ARGS__)
-#define TRACE_ERROR(...) format_str("[ERROR] ", __VA_ARGS__)
-    // vsprintf has been depcrecated due to security issues.
-    // use vsnprintf
-    namespace
-{
-    void format_str(const char *level, const char *fmt, ...)
+namespace {
+     void format_str(const char *level, const char *fmt, ...) // macro will expand to: trace::format_str, which is not accessible so that's why we can't put it in separate
     {
         std::ofstream ofs("log.txt", std::ofstream::out | std::ofstream::app);
         std::time_t t = std::time(nullptr);
@@ -41,5 +30,16 @@
         ofs.close();
     }
 }
+namespace trace {
+#ifdef DEBUG
+    #define TRACE_DEBUG(...) format_str("[DEBUG] ", __VA_ARGS__)
+#else
+    #define TRACE_DEBUG(...) // No-op when DEBUG is not defined
+#endif // DEBUG
 
+#define TRACE_INFO(...) format_str("[INFO] ", __VA_ARGS__)
+#define TRACE_ERROR(...) format_str("[ERROR] ", __VA_ARGS__)
+    // vsprintf has been depcrecated due to security issues.
+    // use vsnprintf
+} // namespace trace
 #endif //!__TRACE__H__

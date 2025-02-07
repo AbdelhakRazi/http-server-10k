@@ -14,6 +14,7 @@
 bool isRunning{true};
 std::condition_variable cond;
 
+namespace server {
 TcpServer::TcpServer(int nb_threads) : events_list(events_size), thread_pool{nb_threads}
 {
     // initialize address set
@@ -49,7 +50,7 @@ void TcpServer::stop()
     if (server_fd != -1)
     {
         close(server_fd);
-        TRACE_DEBUG("Closed Server socket");
+        TRACE_DEBUG("Closed Server socket"); // preprocessor doesn't treat macros as part of namespace
         for (int client_fd : current_fds)
         {
             close(client_fd);
@@ -159,3 +160,4 @@ void TcpServer::handle_clients()
         }
     }
 }
+} // namespace server

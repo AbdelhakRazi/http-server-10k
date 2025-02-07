@@ -11,7 +11,7 @@
 #include "parser/http_parser.h"
 
 #include "thread_pool/thread_pool.h"
-
+namespace server {
 class TcpServer : public Server
 {
     ThreadPool thread_pool;
@@ -39,7 +39,7 @@ public:
     ~TcpServer() override = default;
     
 };
-
+} // namespace server
 #endif  //!__TCP_SERVER__H__
 // RULE: put as much includes in .cc
 
