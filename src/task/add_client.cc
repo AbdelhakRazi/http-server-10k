@@ -22,10 +22,22 @@ void AddClient::operator() ()
     kevent(server_kqueue, &server_monitor, 1, nullptr, 0, nullptr); // direct add */
     while (isRunning)
     {
-        int res = kevent(server_kqueue, nullptr, 0, &server_event, 1, nullptr);
+        // problem: kevent won't detect signals since it is in subthread
+        // temp solution: use timeout
+        struct timespec timeout;
+        memset(&timeout, 0, sizeof(timeout));
+        timeout.tv_sec = 10;
+        int res = kevent(server_kqueue, nullptr, 0, &server_event, 1, &timeout);
         if (res > 0)
         {
             accept_client();
+        }
+        else if (res == -1) {
+            if(errno == EINVAL) {
+                TRACE_DEBUG("Invalid timeout filter");
+            }
+            TRACE_DEBUG("Error accepting new client");
+            exit(EXIT_FAILURE);
         }
     }
 }

@@ -15,7 +15,7 @@ void sigint_handler(int signal)
 {
   if (signal == SIGINT)
   {
-    TRACE_DEBUG("Received sig int, closing sockets");
+    TRACE_DEBUG("Received SIGINT");
     socket_server->stop();
   }
 }

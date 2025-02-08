@@ -34,19 +34,20 @@ ThreadPool::ThreadPool(int nb_threads)
             while(isRunning) {
                 std::unique_lock<std::mutex> guard(tasks_mutex);
                 cond.wait(guard);
-                if(!isRunning) return; // ended program
+                if(!isRunning) return; // ended program.
                 std::function<void()> current_task = std::move(tasks.front());
                 tasks.pop();
+                guard.unlock();
                 current_task();
             }
         
         }));
     }
 }
-
+// Problem? Destructor not being called
 ThreadPool::~ThreadPool() {
     for(int i = 0; i < nb_threads; i++) {
         workers[i].join();
     }
-    TRACE_DEBUG("All threads joined");
+    TRACE_DEBUG("All threads ended");
 }
