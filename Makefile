@@ -42,10 +42,13 @@ $(BUILD_DIR)/main.o: src/main.cc $(BUILD_DIR)/server/tcp_server.o
 	$(CC) $(CPPFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/server/tcp_server.o: server/tcp_server.cc $(BUILD_DIR)/parser/http_parser.o $(BUILD_DIR)/thread_pool/thread_pool.o \
- $(BUILD_DIR)/task/add_client.o $(BUILD_DIR)/task/read_request.o $(BUILD_DIR)/task/send_response.o
+ $(BUILD_DIR)/task/add_client.o $(BUILD_DIR)/task/read_request.o $(BUILD_DIR)/task/send_response.o  
 	$(CC) $(CPPFLAGS) -c $< -o $@
-
-$(BUILD_DIR)/thread_pool/thread_pool.o: thread_pool/thread_pool.cc $(BUILD_DIR)/task/read_request.o $(BUILD_DIR)/task/send_response.o
+$(BUILD_DIR)/task/read_request.o: thread_pool/read_request.cc $(BUILD_DIR)/task/send_response.o
+	$(CC) $(CPPFLAGS) -c $< -o $@
+$(BUILD_DIR)/thread_pool/worker.o: thread_pool/worker.cc $(BUILD_DIR)/task/read_request.o $(BUILD_DIR)/task/send_response.o
+	$(CC) $(CPPFLAGS) -c $< -o $@
+$(BUILD_DIR)/thread_pool/thread_pool.o: thread_pool/thread_pool.cc $(BUILD_DIR)/task/worker.o
 	$(CC) $(CPPFLAGS) -c $< -o $@
 
 # General rule for object files

@@ -6,14 +6,16 @@
 #include <queue>
 #include <memory>
 #include <functional>
+
+#include "thread_pool/worker.h"
 class ThreadPool {
-   std::vector<std::thread> workers;
-   std::queue<std::function<void()>> tasks;
+   std::vector<std::thread> threads;
+   std::vector<Worker> workers;
+   int current_worker{0};
    int nb_threads;
    public:
-        template <typename T> void add_task(T&& task);
-        ThreadPool() = default; // voir ce problème après
-        ThreadPool(int nb_threads);
+        explicit ThreadPool(int nb_threads);
+        void add_client(int client_fd);
         ~ThreadPool();
 
 };

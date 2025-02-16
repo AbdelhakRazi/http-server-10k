@@ -5,7 +5,7 @@
 #include "server/server.h"
 #include "server/tcp_server.h"
 
-#define POOL_SIZE 4
+#define POOL_SIZE 5
 namespace
 { // prevent access of server from other files
   std::unique_ptr<server::Server> socket_server;

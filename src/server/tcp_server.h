@@ -18,8 +18,6 @@ class TcpServer : public Server
     std::thread connection_thread;
     int server_fd;
     struct sockaddr_in address; // sockaddr_in is adapted for ipv4, ipv6 packets.., sockaddr is for general use
-    std::vector<struct kevent> events_list;
-    std::unordered_set<int> current_fds;
     struct kevent server_monitor;
     int kqueue_instance;
     static constexpr int events_size = 1024;
@@ -28,14 +26,13 @@ class TcpServer : public Server
     static constexpr int port_number = 8080;
 
 public:
-    TcpServer(int nb_threads);
+    explicit TcpServer(int nb_threads); // one argument constructor
     void start() override;
     void stop() override;
     void create_socket();
     void bind_socket();
     void listen_socket();
-    void remove_client(int client_fd);
-    void handle_clients();
+    void accept_client();
     ~TcpServer() override = default;
     
 };
