@@ -6,20 +6,19 @@
 #include <sys/event.h>
 #include <sys/time.h>
 #include <unordered_set>
+#include <memory>
 
 #include "server.h"
 #include "parser/http_parser.h"
-
 #include "thread_pool/thread_pool.h"
+#include "polling/polling.h"
 namespace server {
 class TcpServer : public Server
 {
     ThreadPool thread_pool;
-    std::thread connection_thread;
     int server_fd;
     struct sockaddr_in address; // sockaddr_in is adapted for ipv4, ipv6 packets.., sockaddr is for general use
-    struct kevent server_monitor;
-    int kqueue_instance;
+    std::unique_ptr<Polling> polling;
     static constexpr int events_size = 1024;
     static constexpr int backlog_size = 1024;
     static constexpr int max_fd = 10000;
