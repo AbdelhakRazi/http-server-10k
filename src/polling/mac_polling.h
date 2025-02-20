@@ -9,6 +9,7 @@ class MacPolling: public Polling {
     public:
         int create_queue() override;
         int add_user(int queue_instance, int user) override;
+        static constexpr int MAX_SIZE = 1000;
         void wait_events(int queue_instance, 
             int timeout, 
             EventType event_type,

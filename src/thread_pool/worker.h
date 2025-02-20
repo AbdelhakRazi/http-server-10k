@@ -5,11 +5,12 @@
 #include <sys/event.h>
 #include <sys/time.h>
 #include <unordered_set>
+#include "polling/polling.h"
 
 class Worker
 {
-    std::vector<struct kevent> events_list;
     std::unordered_set<int> current_fds;
+    std::unique_ptr<Polling> polling;
     int kqueue_instance;
     static constexpr int events_size = 1024;
 
