@@ -16,11 +16,17 @@ int MacPolling::add_user(int queue_instance, int user)
         nullptr); // direct add */
 }
 
-int MacPolling::wait_events(int queue_instance, PollingParameters polling_parameters)
+int MacPolling::wait_events(int queue_instance, PollingEvent& events, int timeout)
 {
+    struct timespec ktimeout;
+    if(timeout != -1) {
+        memset(&timeout, 0, sizeof(ktimeout));
+        ktimeout.tvsec = ktimeout / 1000;
+    }
+    struct kevent kevent;
     return kevent(queue_instance, 
         nullptr, 0, 
-        polling_parameters.events, polling_parameters.max_events, 
-        polling_parameters.timeout);
-    return 0;
+        &kevent, 1, 
+        &ktimeout);
+    
 }

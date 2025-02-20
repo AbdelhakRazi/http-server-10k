@@ -24,7 +24,10 @@ void Worker::operator()()
         timeout.tv_nsec = 0;
         timeout.tv_sec = 0;
         // we need timeout, in case we add new client, time it out to be taken into consideration
-        int res = kevent(kqueue_instance, nullptr, 0, events_list.data(), 1000, &timeout);
+        int res = kevent(kqueue_instance, 
+            nullptr, 0, 
+            events_list.data(), 1000, 
+            &timeout);
         if (res == -1)
         {
             TRACE_ERROR("An error occured with kevent");

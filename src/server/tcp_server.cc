@@ -10,6 +10,7 @@
 #include "task/send_response.h"
 #include "logging/trace.h"
 #include "polling/polling_factory.h"
+#include "polling/polling_event.h"
 
 bool isRunning{true};
 std::condition_variable cond;
@@ -115,7 +116,8 @@ namespace server
         while (isRunning)
         {
             // set polling parameters
-            int res = kevent(server_kqueue, nullptr, 0, &server_event, 1, nullptr);
+            PollingEvent polling_event;
+            int res = polling->wait_events(server_queue, server_fd, polling_event, -1);
             if (res > 0)
             {
                 accept_client();

@@ -8,7 +8,7 @@ class MacPolling: public Polling {
     public:
         int create_queue() override;
         int add_user(int queue_instance, int user) override;
-        int wait_events(int queue_instance, PollingParameters polling_parameters) override;
+        int wait_events(int queue_instance, PollingEvent* events, int timeout) override;
         ~MacPolling() = default; 
 };
 #endif  //!__MAC_POLLING__H__
