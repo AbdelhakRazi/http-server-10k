@@ -10,7 +10,6 @@
 #include "task/send_response.h"
 #include "logging/trace.h"
 #include "polling/polling_factory.h"
-#include "polling/polling_event.h"
 
 bool isRunning{true};
 std::condition_variable cond;
@@ -112,28 +111,12 @@ namespace server
         // first error: no need to set up server for monitoring, add thread that will monitor it continuously.
         polling->add_user(server_kqueue, server_fd);
         TRACE_INFO("Server listening on %d", server_fd);
-        struct kevent server_event;
-        while (isRunning)
-        {
-            // set polling parameters
-            PollingEvent polling_event;
-            int res = polling->wait_events(server_queue, server_fd, polling_event, -1);
-            if (res > 0)
-            {
-                accept_client();
-            }
-            else if (res == -1)
-            {
-                if (errno == EINVAL)
-                {
-                    TRACE_DEBUG("Invalid timeout filter");
-                }
-                TRACE_DEBUG("Error accepting new client");
-                exit(EXIT_FAILURE);
-            }
-        }
+        polling->wait_events(server_kqueue, server_fd, EventType::SERVER, [&]()
+                             { accept_client(); }, []()
+                             {
+                    TRACE_DEBUG("Error accepting new client");
+                    exit(EXIT_FAILURE); });
     }
-
     void TcpServer::accept_client()
     {
         int client_fd;
@@ -141,7 +124,7 @@ namespace server
         socklen_t addr_len;
         client_fd = accept(server_fd, reinterpret_cast<sockaddr *>(&client_addr), &addr_len);
         if (client_fd > 0)
-        {        
+        {
             thread_pool.add_client(client_fd);
         }
         else

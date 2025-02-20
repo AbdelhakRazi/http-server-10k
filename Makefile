@@ -26,7 +26,7 @@ $(BUILD_DIR)/%.o: %.cc | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) -c $< -o $@
 
 $(BUILD_DIR):
-	mkdir -p $(BUILD_DIR) $(BUILD_DIR)/src/server $(BUILD_DIR)/src/thread_pool $(BUILD_DIR)/src/task $(BUILD_DIR)/src/parser
+	mkdir -p $(BUILD_DIR) $(BUILD_DIR)/src/server $(BUILD_DIR)/src/thread_pool $(BUILD_DIR)/src/task $(BUILD_DIR)/src/parser $(BUILD_DIR)/src/polling
 
 # Include dependency files
 -include $(DEP)
@@ -42,7 +42,7 @@ $(BUILD_DIR)/main.o: src/main.cc $(BUILD_DIR)/server/tcp_server.o
 	$(CC) $(CPPFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/server/tcp_server.o: server/tcp_server.cc $(BUILD_DIR)/parser/http_parser.o $(BUILD_DIR)/thread_pool/thread_pool.o \
- $(BUILD_DIR)/task/add_client.o $(BUILD_DIR)/task/read_request.o $(BUILD_DIR)/task/send_response.o  
+ $(BUILD_DIR)/task/add_client.o $(BUILD_DIR)/task/read_request.o $(BUILD_DIR)/task/send_response.o $(BUILD_DIR)/polling/mac_polling.o  
 	$(CC) $(CPPFLAGS) -c $< -o $@
 $(BUILD_DIR)/task/read_request.o: thread_pool/read_request.cc $(BUILD_DIR)/task/send_response.o
 	$(CC) $(CPPFLAGS) -c $< -o $@
