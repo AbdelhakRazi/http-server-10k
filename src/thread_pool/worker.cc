@@ -20,6 +20,8 @@ Worker::Worker()
 }
 void Worker::operator()()
 {
+    // solution for argument passing: use an interface/class, that has onSuccess, onError methods and so on.
+    // and call it inside worker, pass it here.. That will fix it.
     polling->wait_events(kqueue_instance, 0, EventType::WORKER, 
         [&]() {
             ReadRequest{static_cast<int>(event.ident), current_fds, kqueue_instance}();
