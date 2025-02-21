@@ -5,13 +5,14 @@
 #include <unistd.h>
 #include <iostream>
 #include <thread>
+#include <sys/resource.h>
 
 #include "task/read_request.h"
 #include "task/send_response.h"
 #include "logging/trace.h"
+#include "polling/polling_factory.h"
 
 bool isRunning{true};
-std::condition_variable cond;
 
 namespace server
 {
@@ -29,6 +30,7 @@ namespace server
         {
             TRACE_ERROR("Failed to increase server file descriptors, can't handle 10k clients");
         };
+        polling = PollingFactory::createPolling();
     }
 
     void TcpServer::start()
@@ -41,7 +43,6 @@ namespace server
     void TcpServer::stop()
     {
         isRunning = false;
-        cond.notify_all();
         if (server_fd != -1)
         {
             close(server_fd);
@@ -100,46 +101,31 @@ namespace server
             TRACE_ERROR("listen failed");
             exit(EXIT_FAILURE);
         };
-        kqueue_instance = kqueue();
-        if (kqueue_instance == -1)
+        int server_kqueue = polling->create_queue();
+        if (server_kqueue == -1)
         {
             TRACE_ERROR("Kqueue creation failed");
             exit(EXIT_FAILURE);
         }
         // first error: no need to set up server for monitoring, add thread that will monitor it continuously.
-        struct kevent server_monitor;
-        struct kevent server_event;
-        int server_kqueue = kqueue();
-        EV_SET(&server_monitor, server_fd, EVFILT_READ, EV_ADD, 0, 0, nullptr);
-        kevent(server_kqueue, &server_monitor, 1, nullptr, 0, nullptr); // direct add */
+        polling->add_user(server_kqueue, server_fd);
         TRACE_INFO("Server listening on %d", server_fd);
-        while (isRunning)
-        {
-            int res = kevent(server_kqueue, nullptr, 0, &server_event, 1, nullptr);
-            if (res > 0)
-            {
-                accept_client();
-            }
-            else if (res == -1)
-            {
-                if (errno == EINVAL)
-                {
-                    TRACE_DEBUG("Invalid timeout filter");
-                }
-                TRACE_DEBUG("Error accepting new client");
-                exit(EXIT_FAILURE);
-            }
-        }
+        polling->wait_server_events(server_kqueue, [&]()
+                             { accept_client(); }, []()
+                             {
+                    TRACE_DEBUG("Error accepting new client");
+                    exit(EXIT_FAILURE); });
     }
-
     void TcpServer::accept_client()
     {
         int client_fd;
         struct sockaddr_in client_addr;
         socklen_t addr_len;
+        TRACE_DEBUG("are we good?");
         client_fd = accept(server_fd, reinterpret_cast<sockaddr *>(&client_addr), &addr_len);
+        TRACE_DEBUG("Client added %d", client_fd);
         if (client_fd > 0)
-        {        
+        {
             thread_pool.add_client(client_fd);
         }
         else

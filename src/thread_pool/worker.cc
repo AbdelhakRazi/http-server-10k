@@ -3,12 +3,15 @@
 #include "logging/trace.h"
 #include "task/read_request.h"
 #include "task/send_response.h"
+#include "polling/polling_factory.h"
+#include <thread>
 
 extern bool isRunning;
 
-Worker::Worker() : events_list(events_size)
+Worker::Worker()
 {
-    kqueue_instance = kqueue();
+    polling = std::move(PollingFactory::createPolling());
+    kqueue_instance = polling->create_queue();
     if (kqueue_instance < 0)
     {
         TRACE_ERROR("Kqueue creation failed for thread %s", std::this_thread::get_id);
@@ -17,42 +20,14 @@ Worker::Worker() : events_list(events_size)
 }
 void Worker::operator()()
 {
-    while (isRunning)
-    {
-        struct timespec timeout;
-        memset(&timeout, 0, sizeof(timeout));
-        timeout.tv_nsec = 0;
-        timeout.tv_sec = 0;
-        // we need timeout, in case we add new client, time it out to be taken into consideration
-        int res = kevent(kqueue_instance, nullptr, 0, events_list.data(), 1000, &timeout);
-        if (res == -1)
-        {
-            TRACE_ERROR("An error occured with kevent");
+    polling->wait_worker_events(kqueue_instance, 0, 
+        [&](auto socket_id) {
+            ReadRequest{static_cast<int>(socket_id), current_fds, kqueue_instance}();
+        },
+        [&](auto socket_id) {
+            remove_client(socket_id);
         }
-        if (res > 0)
-        {
-            for (struct kevent event : events_list)
-            {
-                if (event.flags & EV_ERROR)
-                {
-                    TRACE_ERROR("Error on client: %d", event.ident);
-                    remove_client(event.ident);
-                    continue;
-                }
-                if (event.filter == EVFILT_READ)
-                {
-                    if (event.flags & EV_EOF)
-                    {
-                        remove_client(event.ident);
-                    }
-                    else
-                    {
-                        ReadRequest{static_cast<int>(event.ident), current_fds, kqueue_instance}();
-                    }
-                }
-            }
-        }
-    }
+    );
 }
 
 void Worker::remove_client(int client_fd)
@@ -66,9 +41,7 @@ void Worker::remove_client(int client_fd)
 
 void Worker::add_client(int client_fd)
 {
-    struct kevent client_monitor;
-    EV_SET(&client_monitor, client_fd, EVFILT_READ, EV_ADD, 0, 0, nullptr);
-    kevent(kqueue_instance, &client_monitor, 1, nullptr, 0, nullptr); // direct add */
+    polling->add_user(kqueue_instance, client_fd);
     current_fds.insert(client_fd);
 }
 

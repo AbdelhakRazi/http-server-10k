@@ -3,13 +3,11 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <iostream>
-#include <sys/event.h>
 #include <arpa/inet.h>
 
 #include "http/http_request.h"
 #include "parser/http_parser.h"
 #include "logging/trace.h"
-#include <sys/event.h>
 #include "task/send_response.h"
 
 

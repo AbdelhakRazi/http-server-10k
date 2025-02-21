@@ -8,6 +8,7 @@
 #include <functional>
 
 #include "thread_pool/worker.h"
+
 class ThreadPool {
    std::vector<std::thread> threads;
    std::vector<Worker> workers;

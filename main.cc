@@ -23,7 +23,7 @@ void set_signal_handler()
 {
   struct sigaction act;
   memset(&act, 0, sizeof(act));
-  act.__sigaction_u.__sa_handler = sigint_handler;
+  act.sa_handler = sigint_handler;
   sigaction(SIGINT, &act, NULL);
 }
 int main()
