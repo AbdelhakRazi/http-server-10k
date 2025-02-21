@@ -21,14 +21,10 @@ int MacPolling::add_user(int queue_instance, int user)
                   nullptr); // direct add */
 }
 
-void MacPolling::wait_events(int queue_instance,
-                             int timeout,
-                             EventType event_type,
+void MacPolling::wait_server_events(int queue_instance,
                              std::function<void()> onSuccess,
                              std::function<void()> onError)
 {
-    if (event_type == EventType::SERVER)
-    {
         struct kevent event;
         while (isRunning)
         {
@@ -46,9 +42,12 @@ void MacPolling::wait_events(int queue_instance,
                 onSuccess();
             }
         }
-    }
-    else if (event_type == EventType::WORKER)
-    {
+}
+void MacPolling::wait_worker_events(int queue_instance,
+    int timeout,
+    std::function<void(int)> onSuccess,
+    std::function<void(int)> onError)
+{
         struct timespec ktimeout;
         if (timeout != -1)
         {
@@ -74,22 +73,21 @@ void MacPolling::wait_events(int queue_instance,
                     if (event.flags & EV_ERROR)
                     {
                         TRACE_ERROR("Error on client: %d", event.ident);
-                        onError();
+                        onError(event);
                         continue;
                     }
                     if (event.filter == EVFILT_READ)
                     {
                         if (event.flags & EV_EOF)
                         {
-                            onError();
+                            onError(event);
                         }
                         else
                         {
-                            onSuccess();
+                            onSuccess(event);
                         }
                     }
                 }
             }
         }
-    }
 }

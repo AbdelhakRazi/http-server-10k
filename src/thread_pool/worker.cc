@@ -4,7 +4,6 @@
 #include "task/read_request.h"
 #include "task/send_response.h"
 #include "polling/polling_factory.h"
-#include "polling/event_type.h"
 
 extern bool isRunning;
 
@@ -20,13 +19,11 @@ Worker::Worker()
 }
 void Worker::operator()()
 {
-    // solution for argument passing: use an interface/class, that has onSuccess, onError methods and so on.
-    // and call it inside worker, pass it here.. That will fix it.
-    polling->wait_events(kqueue_instance, 0, EventType::WORKER, 
-        [&]() {
+    polling->wait_worker_events(kqueue_instance, 0, EventType::WORKER, 
+        [&](auto event) {
             ReadRequest{static_cast<int>(event.ident), current_fds, kqueue_instance}();
         },
-        [&]() {
+        [&](auto event) {
             remove_client(event.ident);
         }
     )
