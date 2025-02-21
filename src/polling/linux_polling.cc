@@ -1,3 +1,4 @@
+#include "polling/polling.h"
 #include "linux_polling.h"
 #include <sys/epoll.h>
 #include "logging/trace.h"

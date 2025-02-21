@@ -9159,3 +9159,32 @@
 [DEBUG] tcp_server.cc.49 02/21/25 14:37:58 Closed Server socket
 [DEBUG] tcp_server.cc.116 02/21/25 14:37:58 Error accepting new client
 [DEBUG] thread_pool.cc.43 02/21/25 14:37:58 All threads ended
+[DEBUG] tcp_server.cc.85 02/21/25 18:29:12 Serever fd 9
+[INFO] tcp_server.cc.112 02/21/25 18:29:12 Server listening on 9
+[DEBUG] main.cc.18 02/21/25 18:29:33 Received SIGINT
+[DEBUG] tcp_server.cc.49 02/21/25 18:29:33 Closed Server socket
+[DEBUG] thread_pool.cc.43 02/21/25 18:29:33 All threads ended
+[DEBUG] tcp_server.cc.85 02/21/25 20:45:13 Serever fd 9
+[INFO] tcp_server.cc.112 02/21/25 20:45:13 Server listening on 9
+[DEBUG] main.cc.18 02/21/25 20:45:14 Received SIGINT
+[DEBUG] tcp_server.cc.49 02/21/25 20:45:14 Closed Server socket
+[DEBUG] tcp_server.cc.116 02/21/25 20:45:14 Error accepting new client
+[DEBUG] thread_pool.cc.45 02/21/25 20:45:14 All threads ended
+[DEBUG] tcp_server.cc.85 02/21/25 20:45:52 Serever fd 9
+[INFO] tcp_server.cc.112 02/21/25 20:45:52 Server listening on 9
+[DEBUG] main.cc.18 02/21/25 20:45:53 Received SIGINT
+[DEBUG] tcp_server.cc.49 02/21/25 20:45:53 Closed Server socket
+[DEBUG] tcp_server.cc.116 02/21/25 20:45:53 Error accepting new client
+[DEBUG] thread_pool.cc.45 02/21/25 20:45:53 All threads ended
+[DEBUG] tcp_server.cc.87 02/21/25 22:48:17 Serever fd 9
+[INFO] tcp_server.cc.114 02/21/25 22:48:17 Server listening on 9
+[DEBUG] main.cc.18 02/21/25 22:48:19 Received SIGINT
+[DEBUG] tcp_server.cc.51 02/21/25 22:48:19 Closed Server socket
+[DEBUG] tcp_server.cc.118 02/21/25 22:48:19 Error accepting new client
+[DEBUG] thread_pool.cc.45 02/21/25 22:48:19 All threads ended
+[DEBUG] tcp_server.cc.87 02/21/25 22:52:45 Serever fd 9
+[INFO] tcp_server.cc.114 02/21/25 22:52:45 Server listening on 9
+[DEBUG] main.cc.18 02/21/25 22:52:46 Received SIGINT
+[DEBUG] tcp_server.cc.51 02/21/25 22:52:46 Closed Server socket
+[DEBUG] tcp_server.cc.118 02/21/25 22:52:46 Error accepting new client
+[DEBUG] thread_pool.cc.45 02/21/25 22:52:46 All threads ended
