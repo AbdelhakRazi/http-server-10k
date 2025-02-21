@@ -51,7 +51,7 @@ void MacPolling::wait_worker_events(int queue_instance,
         struct timespec ktimeout;
         if (timeout != -1)
         {
-            memset(&timeout, 0, sizeof(ktimeout));
+            memset(&ktimeout, 0, sizeof(ktimeout));
             ktimeout.tv_sec = timeout / 1000;
         }
         struct kevent events[MAX_SIZE];
