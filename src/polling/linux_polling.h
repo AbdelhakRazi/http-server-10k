@@ -2,9 +2,10 @@
 #define __LINUX_POLLING__H__
 
 #include "polling/polling.h"
-#include <functional>
+
 class LinuxPolling: public Polling {
     public:
+        static constexpr int MAX_SIZE = 1000;
         int create_queue() override;
         int add_user(int queue_instance, int user) override;
         void wait_server_events(int queue_instance, 

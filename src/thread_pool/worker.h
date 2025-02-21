@@ -1,16 +1,14 @@
 #ifndef __WORKER__H__
 #define __WORKER__H__
 #include <arpa/inet.h> // For htons, htonl, etc.
-#include <sys/types.h>
-#include <sys/event.h>
-#include <sys/time.h>
 #include <unordered_set>
+#include <memory>
 #include "polling/polling.h"
 
 class Worker
 {
     std::unordered_set<int> current_fds;
-    std::unique_ptr<Polling> polling;
+    std::shared_ptr<Polling> polling; // can't use unique_ptr since we'll copy it into two places
     int kqueue_instance;
     static constexpr int events_size = 1024;
 

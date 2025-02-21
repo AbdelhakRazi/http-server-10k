@@ -73,18 +73,18 @@ void MacPolling::wait_worker_events(int queue_instance,
                     if (event.flags & EV_ERROR)
                     {
                         TRACE_ERROR("Error on client: %d", event.ident);
-                        onError(event);
+                        onError(event.ident);
                         continue;
                     }
                     if (event.filter == EVFILT_READ)
                     {
                         if (event.flags & EV_EOF)
                         {
-                            onError(event);
+                            onError(event.ident);
                         }
                         else
                         {
-                            onSuccess(event);
+                            onSuccess(event.ident);
                         }
                     }
                 }

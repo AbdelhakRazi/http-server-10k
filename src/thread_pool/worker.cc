@@ -4,12 +4,13 @@
 #include "task/read_request.h"
 #include "task/send_response.h"
 #include "polling/polling_factory.h"
+#include <thread>
 
 extern bool isRunning;
 
 Worker::Worker()
 {
-    polling = PollingFactory::createPolling();
+    polling = std::move(PollingFactory::createPolling());
     kqueue_instance = polling->create_queue();
     if (kqueue_instance < 0)
     {
@@ -19,14 +20,14 @@ Worker::Worker()
 }
 void Worker::operator()()
 {
-    polling->wait_worker_events(kqueue_instance, 0, EventType::WORKER, 
-        [&](auto event) {
-            ReadRequest{static_cast<int>(event.ident), current_fds, kqueue_instance}();
+    polling->wait_worker_events(kqueue_instance, 0, 
+        [&](auto socket_id) {
+            ReadRequest{static_cast<int>(socket_id), current_fds, kqueue_instance}();
         },
-        [&](auto event) {
-            remove_client(event.ident);
+        [&](auto socket_id) {
+            remove_client(socket_id);
         }
-    )
+    );
 }
 
 void Worker::remove_client(int client_fd)
@@ -40,9 +41,7 @@ void Worker::remove_client(int client_fd)
 
 void Worker::add_client(int client_fd)
 {
-    struct kevent client_monitor;
-    EV_SET(&client_monitor, client_fd, EVFILT_READ, EV_ADD, 0, 0, nullptr);
-    kevent(kqueue_instance, &client_monitor, 1, nullptr, 0, nullptr); // direct add */
+    polling->add_user(kqueue_instance, client_fd);
     current_fds.insert(client_fd);
 }
 

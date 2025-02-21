@@ -10,7 +10,7 @@ class PollingFactory {
     public:
         static std::unique_ptr<Polling> createPolling() {
             #if defined(__linux__)
-                return make_unique<LinuxPolling>();
+                return std::make_unique<LinuxPolling>();
             #elif (defined(__MACH__) && defined(__APPLE__)) \
                 || defined(__FreeBSD__) \
                 || defined(__NetBSD__) \

@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <iostream>
 #include <thread>
+#include <sys/resource.h>
 
 #include "task/read_request.h"
 #include "task/send_response.h"
@@ -12,7 +13,6 @@
 #include "polling/polling_factory.h"
 
 bool isRunning{true};
-std::condition_variable cond;
 
 namespace server
 {
@@ -43,7 +43,6 @@ namespace server
     void TcpServer::stop()
     {
         isRunning = false;
-        cond.notify_all();
         if (server_fd != -1)
         {
             close(server_fd);
@@ -111,7 +110,7 @@ namespace server
         // first error: no need to set up server for monitoring, add thread that will monitor it continuously.
         polling->add_user(server_kqueue, server_fd);
         TRACE_INFO("Server listening on %d", server_fd);
-        polling->wait_events(server_kqueue, server_fd, EventType::SERVER, [&]()
+        polling->wait_server_events(server_kqueue, [&]()
                              { accept_client(); }, []()
                              {
                     TRACE_DEBUG("Error accepting new client");
@@ -122,7 +121,9 @@ namespace server
         int client_fd;
         struct sockaddr_in client_addr;
         socklen_t addr_len;
+        TRACE_DEBUG("are we good?");
         client_fd = accept(server_fd, reinterpret_cast<sockaddr *>(&client_addr), &addr_len);
+        TRACE_DEBUG("Client added %d", client_fd);
         if (client_fd > 0)
         {
             thread_pool.add_client(client_fd);

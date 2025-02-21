@@ -1,7 +1,6 @@
 #include "thread_pool/thread_pool.h"
 
 #include <iostream>
-#include <sys/event.h>
 
 #include "logging/trace.h"
 #include <sys/fcntl.h>
@@ -9,11 +8,12 @@
 
 ThreadPool::ThreadPool(int nb_threads)
 {
+    workers.reserve(nb_threads);
+    threads.reserve(nb_threads);
     for (int i = 0; i < nb_threads; i++)
     {
-        Worker worker;
-        workers.push_back(worker);
-        threads.push_back(std::thread(worker));
+        workers.emplace_back();
+        threads.emplace_back(std::thread(std::ref(workers.back())));
     }
 }
 void ThreadPool::add_client(int client_fd)
