@@ -4,11 +4,10 @@
 #include <arpa/inet.h> // For htons, htonl, etc.
 #include <unordered_set>
 #include <memory>
-
-#include "server.h"
-#include "parser/http_parser.h"
+#include "server/server.h"
 #include "thread_pool/thread_pool.h"
-#include "polling/polling.h"
+
+class Polling;
 namespace server {
 class TcpServer : public Server
 {
@@ -29,7 +28,7 @@ public:
     void bind_socket();
     void listen_socket();
     void accept_client();
-    ~TcpServer() override = default;
+    ~TcpServer() override;
     
 };
 } // namespace server

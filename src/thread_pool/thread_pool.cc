@@ -1,10 +1,12 @@
 #include "thread_pool/thread_pool.h"
 
 #include <iostream>
-
-#include "logging/trace.h"
 #include <sys/fcntl.h>
 #include <unistd.h>
+
+#include "logging/trace.h"
+#include "thread_pool/worker.h"
+
 
 ThreadPool::ThreadPool(int nb_threads)
 {

@@ -11,6 +11,8 @@
 #include "task/send_response.h"
 #include "logging/trace.h"
 #include "polling/polling_factory.h"
+#include "polling/polling.h"
+
 
 bool isRunning{true};
 
@@ -139,5 +141,8 @@ namespace server
                 TRACE_ERROR("Accept failed");
             }
         }
+    }
+    TcpServer::~TcpServer()
+    {
     }
 } // namespace server
