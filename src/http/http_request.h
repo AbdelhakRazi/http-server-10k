@@ -1,12 +1,14 @@
 #ifndef __HTTP_REQUEST__H__
 #define __HTTP_REQUEST__H__
 
-#include "http/header.h"
-#include "http/body.h"
-
+#include <string>
+#include <optional>
 struct HttpRequest{
-    const Header header;
-    const Body body;
+    std::string method;
+    std::string uri;
+    std::string version;
+    std::optional<std::string> optional_headers;
+    std::optional<std::string> body;
 };
 
 #endif  //!__HTTP_REQUEST__H__
