@@ -1,6 +1,7 @@
 #include "parser/http_parser.h"
 #include "logging/trace.h"
 #include "exceptions/http_exception.h"
+#include "http/http_request.h"
 
 #include <iostream>
 #include <unordered_set>
@@ -24,7 +25,7 @@ HttpRequest parse_http_request(const char* buffer, ssize_t nb_bytes) {
       method.push_back(buffer[iterator]);
       iterator++;
     }
-    if(HTTP_METHODS.find(method) == HTTP_METHODS.end()) throw HttpException{"Invalud HTTP method"};
+    if(HTTP_METHODS.find(method) == HTTP_METHODS.end()) throw HttpException{"Invalid HTTP method"};
     iterator++;
     std::string uri;
     while(buffer[iterator] != ' ' && iterator < nb_bytes) {
@@ -37,7 +38,8 @@ HttpRequest parse_http_request(const char* buffer, ssize_t nb_bytes) {
       version.push_back(buffer[iterator]);
       iterator++;
     }
-    if(HTTP_VERSIONS.find(version) == HTTP_VERSIONS.end()) throw HttpException{"Invalud HTTP Version"};
+    TRACE_DEBUG("version %s", version.c_str());
+    if(HTTP_VERSIONS.find(version) == HTTP_VERSIONS.end()) throw HttpException{"Invalid HTTP Version"};
     iterator += 2;
     std::optional<std::string> optional_headers;
     std::string hdrs;
@@ -51,4 +53,3 @@ HttpRequest parse_http_request(const char* buffer, ssize_t nb_bytes) {
     std::optional<std::string> body = std::string{buffer, static_cast<size_t>(nb_bytes)};
     return {method, uri, version, optional_headers, body};
 }
-

@@ -10,6 +10,7 @@
 #include "logging/trace.h"
 #include "task/send_response.h"
 #include "exceptions/http_exception.h"
+#include "http/http_response.h"
 
 
 // when reading we have following scenarios:
@@ -39,7 +40,12 @@ void ReadRequest::operator() ()
         request = parse_http_request(buffer, bytes_read);
     }
     catch(HttpException exception) {
-        TRACE_DEBUG("Exception thrown: %s", exception.what());
+        TRACE_ERROR("Exception thrown: %s", exception.what());
+        HttpResponse response;
+        response.status_code = 400;
+        response.status_message = "Bad request";
+        response.version = "HTTP/1.1";
+        SendResponse{static_cast<int>(client_fd), response}();
         return;
     }
     std::string optional_headers;
@@ -55,8 +61,12 @@ void ReadRequest::operator() ()
     TRACE_DEBUG("Version: %s", request.version.c_str());
     TRACE_DEBUG("Optional headers: %s", optional_headers.c_str());
     TRACE_DEBUG("Body: %s", body.c_str());
-
-
     // read succesfully, write
-    SendResponse{static_cast<int>(client_fd)}();
+    HttpResponse response;
+    response.status_code = 200;
+    response.status_message = "OK";
+    response.version = "HTTP/1.1";
+    response.body = "Well received";
+    response.optional_headers = "Content-Type: text/plain; charset=UTF-8\r\nContent-Length: " + std::to_string(response.body.value().length());
+    SendResponse{static_cast<int>(client_fd), response}();
 }

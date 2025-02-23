@@ -5,6 +5,7 @@
 
 void SendResponse::operator() ()
 {
-    std::string message = "HTTP/1.1 200 OK\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Length: 12\r\n\r\nHello world!";
+    std::string message = serialize_response(response);
+    std::cout << message << std::endl;
     write(client_fd, message.c_str(), message.size());
 }
