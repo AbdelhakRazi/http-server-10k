@@ -123,7 +123,6 @@ namespace server
         int client_fd;
         struct sockaddr_in client_addr;
         socklen_t addr_len;
-        TRACE_DEBUG("are we good?");
         client_fd = accept(server_fd, reinterpret_cast<sockaddr *>(&client_addr), &addr_len);
         TRACE_DEBUG("Client added %d", client_fd);
         if (client_fd > 0)

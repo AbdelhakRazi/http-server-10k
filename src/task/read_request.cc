@@ -9,6 +9,8 @@
 #include "parser/http_parser.h"
 #include "logging/trace.h"
 #include "task/send_response.h"
+#include "exceptions/http_exception.h"
+#include "http/http_response.h"
 
 
 // when reading we have following scenarios:
@@ -33,6 +35,38 @@ void ReadRequest::operator() ()
         close(client_fd); // stops automatically kevent kernel from monitoring the file descriptor
         return;
     }
+    HttpRequest request;
+    try {
+        request = parse_http_request(buffer, bytes_read);
+    }
+    catch(HttpException exception) {
+        TRACE_ERROR("Exception thrown: %s", exception.what());
+        HttpResponse response;
+        response.status_code = 400;
+        response.status_message = "Bad request";
+        response.version = "HTTP/1.1";
+        SendResponse{static_cast<int>(client_fd), response}();
+        return;
+    }
+    std::string optional_headers;
+    if(request.optional_headers.has_value()) {
+        optional_headers = request.optional_headers.value();
+    }
+    std::string body;
+    if(request.body.has_value()) {
+        body = request.body.value();
+    }
+    TRACE_DEBUG("Method: %s", request.method.c_str());
+    TRACE_DEBUG("URI: %s", request.uri.c_str());
+    TRACE_DEBUG("Version: %s", request.version.c_str());
+    TRACE_DEBUG("Optional headers: %s", optional_headers.c_str());
+    TRACE_DEBUG("Body: %s", body.c_str());
     // read succesfully, write
-    SendResponse{static_cast<int>(client_fd)}();
+    HttpResponse response;
+    response.status_code = 200;
+    response.status_message = "OK";
+    response.version = "HTTP/1.1";
+    response.body = "Well received";
+    response.optional_headers = "Content-Type: text/plain; charset=UTF-8\r\nContent-Length: " + std::to_string(response.body.value().length());
+    SendResponse{static_cast<int>(client_fd), response}();
 }

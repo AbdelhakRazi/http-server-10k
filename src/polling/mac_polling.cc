@@ -28,7 +28,6 @@ void MacPolling::wait_server_events(int queue_instance,
         struct kevent event;
         while (isRunning)
         {
-
             int res = kevent(queue_instance,
                              nullptr, 0,
                              &event, 1,
@@ -37,7 +36,7 @@ void MacPolling::wait_server_events(int queue_instance,
             {
                 onError();
             }
-            else if (res == 0)
+            else if (res > 0)
             {
                 onSuccess();
             }
