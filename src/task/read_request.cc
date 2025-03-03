@@ -7,10 +7,11 @@
 
 #include "http/http_request.h"
 #include "parser/http_parser.h"
-#include "logging/trace.h"
+#include "trace/trace.h"
 #include "task/send_response.h"
 #include "exceptions/http_exception.h"
 #include "http/http_response.h"
+#include "router/router.h"
 
 
 // when reading we have following scenarios:
@@ -63,10 +64,15 @@ void ReadRequest::operator() ()
     TRACE_DEBUG("Body: %s", body.c_str());
     // read succesfully, write
     HttpResponse response;
-    response.status_code = 200;
-    response.status_message = "OK";
-    response.version = "HTTP/1.1";
-    response.body = "Well received";
-    response.optional_headers = "Content-Type: text/plain; charset=UTF-8\r\nContent-Length: " + std::to_string(response.body.value().length());
+    std::string key = request.method + ":" + request.uri;
+    auto it = Router::routes.find(key);
+    if(it != Router::routes.end()) {
+        response = it->second(request);
+    }
+    else {
+        response.status_code = 404;
+        response.status_message = "Not Found";
+        response.version = "HTTP/1.1";
+    }
     SendResponse{static_cast<int>(client_fd), response}();
 }

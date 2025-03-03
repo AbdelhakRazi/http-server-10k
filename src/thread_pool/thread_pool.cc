@@ -4,7 +4,7 @@
 #include <sys/fcntl.h>
 #include <unistd.h>
 
-#include "logging/trace.h"
+#include "trace/trace.h"
 #include "thread_pool/worker.h"
 
 

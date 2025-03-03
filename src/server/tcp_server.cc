@@ -9,7 +9,7 @@
 
 #include "task/read_request.h"
 #include "task/send_response.h"
-#include "logging/trace.h"
+#include "trace/trace.h"
 #include "polling/polling_factory.h"
 #include "polling/polling.h"
 
