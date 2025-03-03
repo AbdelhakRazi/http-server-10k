@@ -43,7 +43,7 @@ $(BUILD_DIR)/%.o: %.cc | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) -c $< -o $@
 
 $(BUILD_DIR):
-	mkdir -p $(BUILD_DIR) $(BUILD_DIR)/src/server $(BUILD_DIR)/src/thread_pool $(BUILD_DIR)/src/task $(BUILD_DIR)/src/parser $(BUILD_DIR)/src/polling
+	mkdir -p $(BUILD_DIR) $(BUILD_DIR)/src/server $(BUILD_DIR)/src/thread_pool $(BUILD_DIR)/src/task $(BUILD_DIR)/src/parser $(BUILD_DIR)/src/polling $(BUILD_DIR)/src/app
 
 # Include dependency files
 -include $(DEP)
@@ -55,7 +55,7 @@ $(TARGET): $(OBJ)
 	$(CC) $(CPPFLAGS) $^ -o $@
 
 # Custom object rules
-$(BUILD_DIR)/main.o: src/main.cc $(BUILD_DIR)/server/tcp_server.o
+$(BUILD_DIR)/main.o: src/main.cc $(BUILD_DIR)/app/app.o $(BUILD_DIR)/server/tcp_server.o
 	$(CC) $(CPPFLAGS) -c $< -o $@
 
 # Modified tcp_server rule to use OS-specific polling
@@ -71,6 +71,9 @@ $(BUILD_DIR)/thread_pool/worker.o: thread_pool/worker.cc $(BUILD_DIR)/task/read_
 	$(CC) $(CPPFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/thread_pool/thread_pool.o: thread_pool/thread_pool.cc $(BUILD_DIR)/task/worker.o
+	$(CC) $(CPPFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/app/app.o: app/app.cc
 	$(CC) $(CPPFLAGS) -c $< -o $@
 
 # General rule for object files

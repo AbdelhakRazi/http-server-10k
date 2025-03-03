@@ -3,7 +3,7 @@
 #include <sys/event.h>
 #include <sys/types.h>
 #include <string.h>
-#include "logging/trace.h"
+#include "trace/trace.h"
 
 extern bool isRunning;
 int MacPolling::create_queue()

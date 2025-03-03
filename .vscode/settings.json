@@ -57,5 +57,11 @@
         "unordered_map": "cpp",
         "unordered_set": "cpp",
         "vector": "cpp"
-    }
+    },
+    "clangd.arguments": [
+            "--enable-config",
+            "--clang-tidy",
+            "--header-insertion=iwyu",
+            "--suggest-missing-includes"
+    ] 
 }

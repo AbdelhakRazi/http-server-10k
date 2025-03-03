@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <thread>
 
-#include "logging/trace.h"
+#include "trace/trace.h"
 #include "task/read_request.h"
 #include "task/send_response.h"
 #include "polling/polling_factory.h"

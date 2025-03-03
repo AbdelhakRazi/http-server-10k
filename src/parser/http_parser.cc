@@ -1,5 +1,5 @@
 #include "parser/http_parser.h"
-#include "logging/trace.h"
+#include "trace/trace.h"
 #include "exceptions/http_exception.h"
 #include "http/http_request.h"
 
